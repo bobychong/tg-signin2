@@ -1,0 +1,29 @@
+name: TG自动签到
+
+on:
+  schedule:
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  signin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 安装Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: 安装依赖
+        run: pip install telethon python-socks
+        
+      - name: 执行签到
+        env:
+          API_ID: ${{ secrets.API_ID }}
+          API_HASH: ${{ secrets.API_HASH }}
+          SESSION: ${{ secrets.SESSION }}
+          GROUP1: ${{ secrets.GROUP1 }}
+          GROUP2: ${{ secrets.GROUP2 }}
+        run: python signin.py
