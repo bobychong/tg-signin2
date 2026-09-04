@@ -1,24 +1,24 @@
 name: TG自动签到
-
 on:
   schedule:
     - cron: '0 19 * * *'
   workflow_dispatch:
-
+permissions:
+  contents: write
 jobs:
   signin:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: 安装Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
+
       - name: 安装依赖
         run: pip install telethon python-socks
-        
+
       - name: 执行签到
         env:
           API_ID: ${{ secrets.API_ID }}
@@ -27,3 +27,14 @@ jobs:
           GROUP1: ${{ secrets.GROUP1 }}
           GROUP2: ${{ secrets.GROUP2 }}
         run: python signin.py
+
+      - name: 更新保活时间戳
+        run: echo "Last run: $(date -u)" > keepalive.txt
+
+      - name: 提交保活记录
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add keepalive.txt
+          git commit -m "chore: keepalive $(date -u +%Y-%m-%d)" || echo "No changes to commit"
+          git push
