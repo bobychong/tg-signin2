@@ -29,7 +29,7 @@ jobs:
         run: python signin.py
 
       - name: 更新保活时间戳
-        run: echo "Last run: $(date -u)" > keepalive.txt
+        run: date -u > keepalive.txt
 
       - name: 提交保活记录
         run: |
